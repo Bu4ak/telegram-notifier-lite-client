@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: Bu4ak
  * Date: 22.03.2018
- * Time: 20:33
+ * Time: 20:33.
  */
 
 namespace Bu4ak\TelegramNotifierLite;
