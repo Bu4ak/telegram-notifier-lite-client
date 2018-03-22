@@ -6,7 +6,7 @@
  * Time: 20:33
  */
 
-namespace TelegramNotifierLite;
+namespace Bu4ak\TelegramNotifierLite;
 
 use GuzzleHttp\Client;
 use function GuzzleHttp\Promise\settle;

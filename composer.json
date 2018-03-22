@@ -11,5 +11,10 @@
             "email": "igorbu4@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Bu4ak\\TelegramNotifierLite\\": "src/"
+        }
+    },
     "minimum-stability": "stable"
 }
