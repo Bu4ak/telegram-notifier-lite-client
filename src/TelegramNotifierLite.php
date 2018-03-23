@@ -12,8 +12,7 @@ use GuzzleHttp\Client;
 use function GuzzleHttp\Promise\settle;
 
 /**
- * Class TelegramNotifierLite
- * @package Bu4ak\TelegramNotifierLite
+ * Class TelegramNotifierLite.
  */
 class TelegramNotifierLite
 {
@@ -41,14 +40,10 @@ class TelegramNotifierLite
         $this->token = $token;
     }
 
-    /**
-     *
-     */
     public function __destruct()
     {
         settle($this->promises)->wait();
     }
-
 
     /**
      * @param      $data
