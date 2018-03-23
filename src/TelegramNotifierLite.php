@@ -11,12 +11,16 @@ namespace Bu4ak\TelegramNotifierLite;
 use GuzzleHttp\Client;
 use function GuzzleHttp\Promise\settle;
 
+/**
+ * Class TelegramNotifierLite
+ * @package Bu4ak\TelegramNotifierLite
+ */
 class TelegramNotifierLite
 {
     /**
-     * @var self
+     * @var string
      */
-    private static $instance = null;
+    private $token = '';
     /**
      * @var Client
      */
@@ -27,52 +31,39 @@ class TelegramNotifierLite
     private $promises = [];
 
     /**
-     * NotifierLite constructor.
+     * TelegramNotifierLite constructor.
+     *
+     * @param string $token
      */
-    private function __construct()
+    public function __construct(string $token)
     {
         $this->client = new Client(['base_uri' => 'http://185.246.66.87/']);
+        $this->token = $token;
     }
 
-    private function __clone()
-    {
-    }
-
-    private function __wakeup()
-    {
-    }
-
+    /**
+     *
+     */
     public function __destruct()
     {
         settle($this->promises)->wait();
     }
 
-    /**
-     * @return TelegramNotifierLite
-     */
-    private static function getInstance(): self
-    {
-        if (self::$instance == null) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
 
     /**
-     * @param $data
+     * @param      $data
+     * @param null $token
      */
-    public static function send($data, $token = null): void
+    public function send($data, $token = null): void
     {
-        $token = $token ?? TELEGRAM_NOTIFIER_LITE_TOKEN;
+        $token = $token ?? $this->token;
 
         $bt = debug_backtrace()[0];
         $caller = basename($bt['file']).' ('.$bt['line'].')';
 
-        $message = substr("$caller%0A".self::toString($data), 0, 4096);
+        $message = substr("$caller%0A".$this->encode($data), 0, 4096);
 
-        $instance = self::getInstance();
-        $instance->promises[] = $instance->client->requestAsync(
+        $this->promises[] = $this->client->requestAsync(
             'post',
             "api/send/?token=$token&message=$message"
         );
@@ -83,7 +74,7 @@ class TelegramNotifierLite
      *
      * @return string
      */
-    private static function toString($data): string
+    private function encode($data): string
     {
         if (!is_string($data)) {
             $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
