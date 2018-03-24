@@ -16,6 +16,11 @@
             "Bu4ak\\TelegramNotifierLite\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Bu4ak\\TelegramNotifierLite\\Test\\": "tests/"
+        }
+    },
     "minimum-stability": "stable",
     "require-dev": {
         "phpunit/phpunit": "^7"
