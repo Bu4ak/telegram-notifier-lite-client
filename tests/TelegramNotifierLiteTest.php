@@ -5,7 +5,9 @@ use PHPUnit\Framework\TestCase;
 
 final class TelegramNotifierLiteTest extends TestCase
 {
-    private $notifier, $token, $reflectionObject;
+    private $notifier;
+    private $token;
+    private $reflectionObject;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -14,7 +16,6 @@ final class TelegramNotifierLiteTest extends TestCase
         $this->token = bin2hex(random_bytes(8));
         $this->notifier = new TelegramNotifierLite($this->token);
         $this->reflectionObject = new ReflectionObject($this->notifier);
-
     }
 
     /**
