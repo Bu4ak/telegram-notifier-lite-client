@@ -53,8 +53,8 @@ class TelegramNotifierLite
     {
         $token = $token ?? $this->token;
 
-        $bt = debug_backtrace()[0];
-        $caller = basename($bt['file']).' ('.$bt['line'].')';
+        $backtrace = debug_backtrace();
+        $caller = basename($backtrace[0]['file']).' ('.$backtrace[0]['line'].')';
 
         $message = substr("$caller%0A".$this->encode($data), 0, 4096);
 
