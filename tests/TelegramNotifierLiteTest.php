@@ -5,17 +5,28 @@ use PHPUnit\Framework\TestCase;
 
 final class TelegramNotifierLiteTest extends TestCase
 {
-    public function testClientProperty(): void
+    private $notifier,$token;
+
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
-        $notifierLite = new TelegramNotifierLite('xxxxxxxxxx');
-        $reflectionObject = new ReflectionObject($notifierLite);
+        parent::__construct($name, $data, $dataName);
+        $this->notifier = new TelegramNotifierLite('xxxxxxxxxx');
+
+    }
+
+    /**
+     * @test
+     */
+    public function clientPropertyIsGuzzleInstance(): void
+    {
+        $reflectionObject = new ReflectionObject($this->notifier);
 
         $clientProp = $reflectionObject->getProperty('client');
         $clientProp->setAccessible(true);
 
         $this->assertInstanceOf(
             \GuzzleHttp\Client::class,
-            $clientProp->getValue($notifierLite)
+            $clientProp->getValue($this->notifier)
         );
     }
 }
