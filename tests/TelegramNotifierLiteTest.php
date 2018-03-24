@@ -21,14 +21,6 @@ final class TelegramNotifierLiteTest extends TestCase
     /**
      * @test
      */
-    public function createInstance(): void
-    {
-
-    }
-
-    /**
-     * @test
-     */
     public function clientPropertyIsGuzzleInstance(): void
     {
         $clientProp = $this->reflectionObject->getProperty('client');
@@ -84,10 +76,12 @@ final class TelegramNotifierLiteTest extends TestCase
     public function send(): void
     {
         $notifier = new TelegramNotifierLite($this->token);
+        $reflectionObject = new ReflectionObject($this->notifier);
+
         $notifier->send('test');
-        $promisesProp = $this->reflectionObject->getProperty('promises');
+        $promisesProp = $reflectionObject->getProperty('promises');
         $promisesProp->setAccessible(true);
 
-        $this->assertNotEmpty($promisesProp->getValue($this->notifier));
+        $this->assertNotEmpty($promisesProp->getValue($notifier));
     }
 }
