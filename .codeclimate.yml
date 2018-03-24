@@ -33,5 +33,5 @@ plugins:
       php:S1192:
         enabled: false
 exclude_patterns:
-  - "vendor/"
-  - "tests/"
+  - "./vendor/"
+  - "./tests/"
