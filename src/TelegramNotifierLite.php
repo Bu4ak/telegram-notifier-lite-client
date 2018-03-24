@@ -12,7 +12,7 @@ use GuzzleHttp\Client;
 use function GuzzleHttp\Promise\settle;
 
 /**
- * Class TelegramNotifierLite.
+ * Class TelegramNotifierLiteTest.
  */
 class TelegramNotifierLite
 {
@@ -30,7 +30,7 @@ class TelegramNotifierLite
     private $promises = [];
 
     /**
-     * TelegramNotifierLite constructor.
+     * TelegramNotifierLiteTest constructor.
      *
      * @param string $token
      */
