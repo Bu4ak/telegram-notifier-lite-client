@@ -5,3 +5,25 @@
     <a href="https://codeclimate.com/github/Bu4ak/telegram-notifier-lite-client/test_coverage"><img src="https://api.codeclimate.com/v1/badges/b9a870be87f14eccf917/test_coverage" /></a>
     <a href="https://styleci.io/repos/126356334"><img src="https://styleci.io/repos/126356334/shield?branch=master" alt="StyleCI"></a>
 </p>
+
+You do not need to register a bot or making other difficult actions. Start receiving notifications in two easy steps.
+##### How to use:
+* `composer require bu4ak/telegram-notifier-lite-client`
+* Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
+```php
+use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
+
+$defaultChannel = 'XXXXXXXXXXXXXXXX';
+$debugChannel   = 'YYYYYYYYYYYYYYYY';
+
+$notifier = new TelegramNotifierLite($defaultChannel);
+$notifier->send('Wake up! You have a new order!');
+...
+$notifier->send(['New feedback' => 'Hello how are you I am under the water please help me']);
+...
+} catch (Exception $exception) {
+    $notifier->send($exception->getMessage(), $debugChannel);
+}
+```
+
+###### Instructions for using with Laravel coming soon...
