@@ -51,12 +51,11 @@ class TelegramNotifierLite
      */
     public function send($data, $token = null): void
     {
-        $token = $token ?? $this->token;
+        $token ?: $token = $this->token;
 
         $backtrace = debug_backtrace();
         $caller = basename($backtrace[0]['file']).' ('.$backtrace[0]['line'].')';
-
-        $message = substr("$caller%0A".$this->encode($data), 0, 4096);
+        $message = substr("$caller%0A{$this->encode($data)}", 0, 4096);
 
         $this->promises[] = $this->client->requestAsync(
             'post',
