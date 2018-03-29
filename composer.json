@@ -26,5 +26,12 @@
     "psr-4": {
       "Bu4ak\\TelegramNotifierLite\\Test\\": "tests/"
     }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Bu4ak\\TelegramNotifierLite\\TelegramNotifierLiteServiceProvider"
+      ]
+    }
   }
 }
