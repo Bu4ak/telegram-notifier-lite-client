@@ -17,13 +17,14 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
         $this->publishes(
             [
                 __DIR__.'/config/notifier_lite.php' => config_path('notifier_lite.php'),
-            ], 'config'
+            ],
+            'config'
         );
     }
 
     public function register()
     {
-        $this->app->singleton(TelegramNotifierLite::class, function ($app) {
+        $this->app->singleton(TelegramNotifierLite::class, function () {
             return new TelegramNotifierLite(config('notifier_lite.token.default'));
         });
     }
