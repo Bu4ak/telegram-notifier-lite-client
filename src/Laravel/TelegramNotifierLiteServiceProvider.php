@@ -21,9 +21,6 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
         );
     }
 
-    /**
-     *
-     */
     public function register()
     {
         $this->app->singleton(TelegramNotifierLite::class, function ($app) {
