@@ -7,7 +7,7 @@
 </p>
 
 You do not need to register a bot or making other difficult actions. Start receiving notifications in two easy steps.
-##### How to use:
+#### How to use:
 * `composer require bu4ak/telegram-notifier-lite-client`
 * Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
 ```php
@@ -26,4 +26,36 @@ $notifier->send(['New feedback' => 'Hello how are you I am under the water pleas
 }
 ```
 
-###### Instructions for using with Laravel coming soon...
+#### Using with Laravel:
+* `composer require bu4ak/telegram-notifier-lite-client`
+* If you using Laravel without auto-discovery, add it manually to config/app.php:
+```php
+ 'providers' => [
+    ...
+    TelegramNotifierLiteServiceProvider::class
+    ...
+ ]
+```
+ * `php artisan vendor:publish --provider="Bu4ak\TelegramNotifierLite\TelegramNotifierLiteServiceProvider"`
+* Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
+ * add row to .env file:
+ ```php
+TELEGRAM_NOTIFIER_LITE_TOKEN=YOURTOKEN
+```
+##### Send message:
+```php
+app(TelegramNotifierLite::class)->send(['your data'=>123]);
+//or
+class RandomController extends BaseController
+{
+    public function __construct(TelegramNotifierLite $notifierLite)
+    {
+        $this->notifier = $notifierLite;
+    }
+    
+    public function randomMethod()
+    {
+        $this->notifier->send('random message', 'ANOTHER_CHANNEL_TOKEN');
+    }
+}
+```
