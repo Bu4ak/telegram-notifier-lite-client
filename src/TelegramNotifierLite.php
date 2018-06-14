@@ -36,7 +36,7 @@ class TelegramNotifierLite
      */
     public function __construct(string $token)
     {
-        $this->client = new Client(['base_uri' => 'http://185.246.66.87/']);
+        $this->client = new Client(['base_uri' => 'http://xxx.xxx.xx.xx/']);
         $this->token = $token;
     }
 
