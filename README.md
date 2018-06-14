@@ -6,6 +6,7 @@
     <a href="https://styleci.io/repos/126356334"><img src="https://styleci.io/repos/126356334/shield?branch=master" alt="StyleCI"></a>
 </p>
 
+# disabled now
 You do not need to register a bot or making other difficult actions. Start receiving notifications in two easy steps.
 #### How to use:
 * `composer require bu4ak/telegram-notifier-lite-client`
