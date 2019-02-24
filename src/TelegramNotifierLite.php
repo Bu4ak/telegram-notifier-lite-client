@@ -19,11 +19,11 @@ class TelegramNotifierLite
     /**
      * @var string
      */
-    private $token = '';
+    private $token;
     /**
      * @var Client
      */
-    private $client = null;
+    private $client;
     /**
      * @var array
      */
@@ -36,7 +36,7 @@ class TelegramNotifierLite
      */
     public function __construct(string $token)
     {
-        $this->client = new Client(['base_uri' => 'http://xxx.xxx.xx.xx/']);
+        $this->client = new Client(['base_uri' => config('notifier_lite.api_base_url')]);
         $this->token = $token;
     }
 
