@@ -9,12 +9,13 @@
 namespace Bu4ak\TelegramNotifierLite;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\PromiseInterface;
 use function GuzzleHttp\Promise\settle;
 
 /**
  * Class TelegramNotifierLiteTest.
  */
-class TelegramNotifierLite
+class TelegramNotifierLite implements TelegramNotifier
 {
     /**
      * @var string
@@ -25,18 +26,19 @@ class TelegramNotifierLite
      */
     private $client;
     /**
-     * @var array
+     * @var PromiseInterface[]
      */
-    private $promises = [];
+    private $promises;
 
     /**
      * TelegramNotifierLiteTest constructor.
      *
+     * @param string $baseUri
      * @param string $token
      */
-    public function __construct(string $token)
+    public function __construct(string $baseUri, string $token)
     {
-        $this->client = new Client(['base_uri' => config('notifier_lite.api_base_url')]);
+        $this->client = new Client(['base_uri' => $baseUri]);
         $this->token = $token;
     }
 
@@ -46,15 +48,14 @@ class TelegramNotifierLite
     }
 
     /**
-     * @param      $data
-     * @param null $token
+     * @inheritdoc
      */
-    public function send($data, $token = null): void
+    public function send($data, string $token = ''): void
     {
         $token ?: $token = $this->token;
 
         $backtrace = debug_backtrace();
-        $caller = basename($backtrace[0]['file']).' ('.$backtrace[0]['line'].')';
+        $caller = basename($backtrace[0]['file']) . ' (' . $backtrace[0]['line'] . ')';
         $message = substr("$caller%0A{$this->encode($data)}", 0, 4096);
 
         $this->promises[] = $this->client->requestAsync(
@@ -64,14 +65,14 @@ class TelegramNotifierLite
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      *
      * @return string
      */
     private function encode($data): string
     {
         if (!is_string($data)) {
-            $data = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
         return $data;

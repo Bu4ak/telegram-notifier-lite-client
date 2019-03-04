@@ -24,8 +24,8 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(TelegramNotifierLite::class, function () {
-            return new TelegramNotifierLite(config('notifier_lite.token.default'));
+        $this->app->singleton(TelegramNotifier::class, function () {
+            return new TelegramNotifierLite(config('notifier_lite.api_base_url'), config('notifier_lite.token.default'));
         });
     }
 }
