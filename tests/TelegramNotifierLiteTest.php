@@ -14,7 +14,7 @@ final class TelegramNotifierLiteTest extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $this->token = bin2hex(random_bytes(8));
-        $this->notifier = new TelegramNotifierLite($this->token);
+        $this->notifier = new TelegramNotifierLite('http://localhost', $this->token);
         $this->reflectionObject = new ReflectionObject($this->notifier);
     }
 
@@ -75,13 +75,13 @@ final class TelegramNotifierLiteTest extends TestCase
      */
     public function send(): void
     {
-        $notifier = new TelegramNotifierLite($this->token);
-        $reflectionObject = new ReflectionObject($this->notifier);
-
-        $notifier->send('test');
-        $promisesProp = $reflectionObject->getProperty('promises');
+        $promisesProp = $this->reflectionObject->getProperty('promises');
         $promisesProp->setAccessible(true);
 
-        $this->assertNotEmpty($promisesProp->getValue($notifier));
+        $this->assertEmpty($promisesProp->getValue($this->notifier));
+
+        $this->notifier->send('test');
+
+        $this->assertNotEmpty($promisesProp->getValue($this->notifier));
     }
 }

@@ -28,7 +28,7 @@ class TelegramNotifierLite implements TelegramNotifier
     /**
      * @var PromiseInterface[]
      */
-    private $promises;
+    private $promises = [];
 
     /**
      * TelegramNotifierLiteTest constructor.
