@@ -6,11 +6,10 @@
     <a href="https://styleci.io/repos/126356334"><img src="https://styleci.io/repos/126356334/shield?branch=master" alt="StyleCI"></a>
 </p>
 
-# disabled now
 You do not need to register a bot or making other difficult actions. Start receiving notifications in two easy steps.
 #### How to use:
 * `composer require bu4ak/telegram-notifier-lite-client`
-* Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
+* Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot) (@notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
 ```php
 use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
 
@@ -29,7 +28,7 @@ $notifier->send(['New feedback' => 'Hello how are you I am under the water pleas
 
 #### Using with Laravel:
 * `composer require bu4ak/telegram-notifier-lite-client`
-* If you using Laravel without auto-discovery, add it manually to config/app.php:
+* If you using Laravel `without auto-discovery`, add it manually to config/app.php:
 ```php
  'providers' => [
     ...
@@ -38,7 +37,6 @@ $notifier->send(['New feedback' => 'Hello how are you I am under the water pleas
  ]
 ```
  * `php artisan vendor:publish --provider="Bu4ak\TelegramNotifierLite\TelegramNotifierLiteServiceProvider"`
-* Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
  * add row to .env file:
  ```php
 TELEGRAM_NOTIFIER_LITE_TOKEN=YOURTOKEN
@@ -49,12 +47,7 @@ app(TelegramNotifierLite::class)->send(['your data'=>123]);
 //or
 class RandomController extends BaseController
 {
-    public function __construct(TelegramNotifierLite $notifierLite)
-    {
-        $this->notifier = $notifierLite;
-    }
-    
-    public function randomMethod()
+    public function randomMethod(TelegramNotifierLite $notifierLite)
     {
         $this->notifier->send('random message', 'ANOTHER_CHANNEL_TOKEN');
     }
