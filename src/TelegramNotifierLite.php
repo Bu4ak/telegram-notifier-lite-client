@@ -1,45 +1,45 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Bu4ak
- * Date: 22.03.2018
- * Time: 20:33.
- */
 
 namespace Bu4ak\TelegramNotifierLite;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
+use Throwable;
 use function GuzzleHttp\Promise\settle;
 
 /**
  * Class TelegramNotifierLiteTest.
  */
-class TelegramNotifierLite implements TelegramNotifier
+final class TelegramNotifierLite implements TelegramNotifier
 {
     /**
      * @var string
      */
     private $token;
     /**
-     * @var Client
+     * @var LoggerInterface
      */
-    private $client;
+    private $logger;
+    /**
+     * @var ClientInterface
+     */
+    private $httpClient;
     /**
      * @var PromiseInterface[]
      */
     private $promises = [];
 
     /**
-     * TelegramNotifierLiteTest constructor.
-     *
-     * @param string $baseUri
+     * @param ClientInterface $httpClient (configured with base_uri)
+     * @param LoggerInterface $logger
      * @param string $token
      */
-    public function __construct(string $baseUri, string $token)
+    public function __construct(ClientInterface $httpClient, LoggerInterface $logger, string $token)
     {
-        $this->client = new Client(['base_uri' => $baseUri]);
+        $this->httpClient = $httpClient;
         $this->token = $token;
+        $this->logger = $logger;
     }
 
     public function __destruct()
@@ -52,16 +52,15 @@ class TelegramNotifierLite implements TelegramNotifier
      */
     public function send($data, string $token = ''): void
     {
-        $token ?: $token = $this->token;
+        $token = $token ?: $this->token;
+        $message = substr($this->encode($data), 0, 4096);
 
-        $backtrace = debug_backtrace();
-        $caller = basename($backtrace[0]['file']).' ('.$backtrace[0]['line'].')';
-        $message = substr("$caller%0A{$this->encode($data)}", 0, 4096);
+        $promise = $this->httpClient->requestAsync('POST', "api/send/?token=$token&message=$message");
+        $promise->then(null, function (Throwable $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+        });
 
-        $this->promises[] = $this->client->requestAsync(
-            'post',
-            "api/send/?token=$token&message=$message"
-        );
+        $this->promises[] = $promise;
     }
 
     /**
