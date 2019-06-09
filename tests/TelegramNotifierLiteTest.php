@@ -1,73 +1,50 @@
 <?php
 
 use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
+use Psr\Log\Test\TestLogger;
 
 final class TelegramNotifierLiteTest extends TestCase
 {
+    /** @var TelegramNotifierLite */
     private $notifier;
-    private $token;
-    private $reflectionObject;
+    /** @var TestLogger */
+    private $logger;
+    private $errorMessage = 'Error communicating with server';
+    private $firstToken = 'first_token';
+    private $secondToken = 'second_token';
+    private $requests = [];
 
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public function setUp()
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUp();
 
-        $this->token = bin2hex(random_bytes(8));
-        $this->notifier = new TelegramNotifierLite('http://localhost', $this->token);
-        $this->reflectionObject = new ReflectionObject($this->notifier);
-    }
+        $this->logger = new TestLogger();
 
-    /**
-     * @test
-     */
-    public function clientPropertyIsGuzzleInstance(): void
-    {
-        $clientProp = $this->reflectionObject->getProperty('client');
-        $clientProp->setAccessible(true);
+        $mock = new MockHandler([
+            new Response(200),
+            new Response(401),
+            new RequestException($this->errorMessage, new Request('POST', 'test'))
+        ]);
 
-        $this->assertInstanceOf(
-            \GuzzleHttp\Client::class,
-            $clientProp->getValue($this->notifier)
-        );
-    }
+        $handler = HandlerStack::create($mock);
+        $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
+            parse_str($request->getUri()->getQuery(), $parameters);
+            $this->requests[] = $parameters;
+            return $request;
+        }));
 
-    /**
-     * @test
-     */
-    public function checkToken(): void
-    {
-        $tokenProp = $this->reflectionObject->getProperty('token');
-        $tokenProp->setAccessible(true);
+        $client = new Client(['handler' => $handler]);
 
-        $this->assertEquals(
-            $this->token,
-            $tokenProp->getValue($this->notifier)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function encode(): void
-    {
-        $data = ['hello' => 'world', 123, 'дороу'];
-        $encodeMethod = $this->reflectionObject->getMethod('encode');
-        $encodeMethod->setAccessible(true);
-
-        $dataEncoded = $encodeMethod->invoke($this->notifier, $data);
-
-        $this->assertTrue(is_string($dataEncoded));
-
-        $this->assertEquals(
-            json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            $dataEncoded
-        );
-
-        $this->assertEquals(
-            $encodeMethod->invoke($this->notifier, $dataEncoded),
-            $dataEncoded
-        );
+        $this->notifier = new TelegramNotifierLite($client, $this->logger, $this->firstToken);
     }
 
     /**
@@ -75,13 +52,27 @@ final class TelegramNotifierLiteTest extends TestCase
      */
     public function send(): void
     {
-        $promisesProp = $this->reflectionObject->getProperty('promises');
-        $promisesProp->setAccessible(true);
+        $this->assertEmpty($this->logger->records);
 
-        $this->assertEmpty($promisesProp->getValue($this->notifier));
-
+        $this->notifier->send(['test' => 'data']);
+        $this->notifier->send(1, $this->secondToken);
         $this->notifier->send('test');
 
-        $this->assertNotEmpty($promisesProp->getValue($this->notifier));
+        $this->assertEmpty($this->logger->records);
+
+        $this->notifier->__destruct();
+
+        $this->assertCount(2, $this->logger->records);
+
+        $this->assertTrue($this->logger->hasRecordThatContains($this->errorMessage, 'error'));
+
+        $this->assertEquals(json_encode(['test' => 'data']), $this->requests[0]['message']);
+        $this->assertEquals($this->firstToken, $this->requests[0]['token']);
+
+        $this->assertEquals(1, $this->requests[1]['message']);
+        $this->assertEquals($this->secondToken, $this->requests[1]['token']);
+
+        $this->assertEquals('test', $this->requests[2]['message']);
+        $this->assertEquals($this->firstToken, $this->requests[2]['token']);
     }
 }
