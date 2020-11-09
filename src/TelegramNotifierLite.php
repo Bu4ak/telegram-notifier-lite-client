@@ -7,6 +7,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * Class TelegramNotifierLite.
@@ -88,7 +89,7 @@ final class TelegramNotifierLite implements TelegramNotifier
             static function (Response $response) {
                 static::$logger->info($response->getBody());
             },
-            static function (\Throwable $e) {
+            static function (Throwable $e) {
                 static::$logger->error($e->getMessage(), $e->getTrace());
             }
         );

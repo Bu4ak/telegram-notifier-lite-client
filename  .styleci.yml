@@ -1,1 +1,5 @@
 preset: psr12
+disabled:
+  - align_double_arrow
+  - concat_without_spaces
+  - align_comments

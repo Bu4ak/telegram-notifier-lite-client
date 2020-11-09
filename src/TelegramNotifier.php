@@ -11,7 +11,7 @@ namespace Bu4ak\TelegramNotifierLite;
 interface TelegramNotifier
 {
     /**
-     * @param mixed  $data
+     * @param mixed $data
      * @param string $token
      */
     public function send($data, string $token = ''): void;

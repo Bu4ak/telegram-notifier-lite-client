@@ -2,6 +2,7 @@
 
 namespace Bu4ak\TelegramNotifierLite\Laravel;
 
+use Bu4ak\TelegramNotifierLite\TelegramNotifier;
 use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
@@ -30,7 +31,7 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
         $this->app->singleton(
             TelegramNotifier::class,
             static function () {
-                $httpClient = new Client(['timeout' => 5,]);
+                $httpClient = new Client(['timeout' => 10]);
                 $logger = $this->app->make(LoggerInterface::class);
                 return new TelegramNotifierLite(
                     $httpClient,
