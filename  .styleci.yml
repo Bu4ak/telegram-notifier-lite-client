@@ -1,4 +1,4 @@
-preset: psr12
+preset: laravel
 disabled:
   - align_double_arrow
   - concat_without_spaces
