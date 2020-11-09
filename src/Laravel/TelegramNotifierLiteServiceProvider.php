@@ -1,7 +1,8 @@
 <?php
 
-namespace Bu4ak\TelegramNotifierLite;
+namespace Bu4ak\TelegramNotifierLite\Laravel;
 
+use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 use Psr\Log\LoggerInterface;
@@ -18,7 +19,7 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
     {
         $this->publishes(
             [
-                __DIR__.'/config/notifier_lite.php' => config_path('notifier_lite.php'),
+                __DIR__ . '/config/notifier_lite.php' => config_path('notifier_lite.php'),
             ],
             'config'
         );
@@ -26,10 +27,18 @@ class TelegramNotifierLiteServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(TelegramNotifier::class, static function () {
-            $httpClient = new Client(['base_uri' => config('notifier_lite.api_base_url')]);
-            $logger = $this->app->make(LoggerInterface::class);
-            return new TelegramNotifierLite($httpClient, $logger, config('notifier_lite.token.default'));
-        });
+        $this->app->singleton(
+            TelegramNotifier::class,
+            static function () {
+                $httpClient = new Client(['timeout' => 5,]);
+                $logger = $this->app->make(LoggerInterface::class);
+                return new TelegramNotifierLite(
+                    $httpClient,
+                    config('notifier_lite.api_endpoint'),
+                    config('notifier_lite.token.default'),
+                    $logger
+                );
+            }
+        );
     }
 }

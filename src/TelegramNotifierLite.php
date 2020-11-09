@@ -4,12 +4,12 @@ namespace Bu4ak\TelegramNotifierLite;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\Utils;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
-use Throwable;
-use function GuzzleHttp\Promise\settle;
 
 /**
- * Class TelegramNotifierLiteTest.
+ * Class TelegramNotifierLite.
  */
 final class TelegramNotifierLite implements TelegramNotifier
 {
@@ -17,34 +17,48 @@ final class TelegramNotifierLite implements TelegramNotifier
      * @var string
      */
     private $token;
+
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private static $logger;
+
+    /**
+     * @var string
+     */
+    private $endpoint;
+
     /**
      * @var ClientInterface
      */
     private $httpClient;
+
     /**
      * @var PromiseInterface[]
      */
     private $promises = [];
 
     /**
-     * @param ClientInterface $httpClient (configured with base_uri)
-     * @param LoggerInterface $logger
+     * @param ClientInterface $httpClient
+     * @param string $endpoint
      * @param string $token
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(ClientInterface $httpClient, LoggerInterface $logger, string $token)
-    {
+    public function __construct(
+        ClientInterface $httpClient,
+        string $endpoint,
+        string $token,
+        ?LoggerInterface $logger = null
+    ) {
         $this->httpClient = $httpClient;
+        $this->endpoint = $endpoint;
         $this->token = $token;
-        $this->logger = $logger;
+        static::$logger = $logger;
     }
 
     public function __destruct()
     {
-        settle($this->promises)->wait();
+        Utils::settle($this->promises)->wait();
     }
 
     /**
@@ -53,14 +67,31 @@ final class TelegramNotifierLite implements TelegramNotifier
     public function send($data, string $token = ''): void
     {
         $token = $token ?: $this->token;
-        $message = substr($this->encode($data), 0, 4096);
 
-        $promise = $this->httpClient->requestAsync('POST', "api/send/?token=$token&message=$message");
-        $promise->then(null, function (Throwable $e) {
-            $this->logger->error($e->getMessage(), $e->getTrace());
-        });
+        $promise = $this->httpClient->requestAsync(
+            'POST',
+            $this->endpoint,
+            [
+                'form_params' => [
+                    'token' => $token,
+                    'message' => $this->encode($data),
+                ]
+            ]
+        );
 
         $this->promises[] = $promise;
+
+        if (static::$logger === null) {
+            return;
+        }
+        $promise->then(
+            static function (Response $response) {
+                static::$logger->info($response->getBody());
+            },
+            static function (\Throwable $e) {
+                static::$logger->error($e->getMessage(), $e->getTrace());
+            }
+        );
     }
 
     /**

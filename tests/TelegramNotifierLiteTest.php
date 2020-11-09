@@ -1,15 +1,15 @@
 <?php
 
+namespace Bu4ak\TelegramNotifierLite\Test;
+
 use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
 use Psr\Log\Test\TestLogger;
 
 final class TelegramNotifierLiteTest extends TestCase
@@ -21,30 +21,25 @@ final class TelegramNotifierLiteTest extends TestCase
     private $errorMessage = 'Error communicating with server';
     private $firstToken = 'first_token';
     private $secondToken = 'second_token';
-    private $requests = [];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->logger = new TestLogger();
 
-        $mock = new MockHandler([
-            new Response(200),
-            new Response(401),
-            new RequestException($this->errorMessage, new Request('POST', 'test'))
-        ]);
+        $mock = new MockHandler(
+            [
+                new Response(200, [], 'test'),
+                new Response(401),
+                new RequestException($this->errorMessage, new Request('POST', 'test'))
+            ]
+        );
 
         $handler = HandlerStack::create($mock);
-        $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
-            parse_str($request->getUri()->getQuery(), $parameters);
-            $this->requests[] = $parameters;
-            return $request;
-        }));
-
         $client = new Client(['handler' => $handler]);
 
-        $this->notifier = new TelegramNotifierLite($client, $this->logger, $this->firstToken);
+        $this->notifier = new TelegramNotifierLite($client, '', $this->firstToken, $this->logger);
     }
 
     /**
@@ -62,17 +57,15 @@ final class TelegramNotifierLiteTest extends TestCase
 
         $this->notifier->__destruct();
 
-        $this->assertCount(2, $this->logger->records);
+        $this->assertCount(3, $this->logger->records);
 
         $this->assertTrue($this->logger->hasRecordThatContains($this->errorMessage, 'error'));
-
-        $this->assertEquals(json_encode(['test' => 'data']), $this->requests[0]['message']);
-        $this->assertEquals($this->firstToken, $this->requests[0]['token']);
-
-        $this->assertEquals(1, $this->requests[1]['message']);
-        $this->assertEquals($this->secondToken, $this->requests[1]['token']);
-
-        $this->assertEquals('test', $this->requests[2]['message']);
-        $this->assertEquals($this->firstToken, $this->requests[2]['token']);
+        $this->assertTrue(
+            $this->logger->hasRecordThatContains(
+                'Client error: `POST ` resulted in a `401 Unauthorized` response',
+                'error'
+            )
+        );
+        $this->assertTrue($this->logger->hasRecordThatContains('test', 'info'));
     }
 }
