@@ -39,7 +39,7 @@ $notifier->send(['New feedback' => 'Hello how are you I am under the water pleas
  * `php artisan vendor:publish --provider="Bu4ak\TelegramNotifier\TelegramNotifierServiceProvider"`
  * add row to .env file:
  ```php
-TELEGRAM_NOTIFIER_LITE_TOKEN=YOURTOKEN
+TELEGRAM_NOTIFIER_TOKEN=YOURTOKEN
 ```
 ##### Send message:
 ```php
