@@ -1,8 +1,8 @@
 <?php
 
-namespace Bu4ak\TelegramNotifierLite\Test;
+namespace Bu4ak\TelegramNotifier\Test;
 
-use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
+use Bu4ak\TelegramNotifier\TelegramNotifier;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -12,9 +12,9 @@ use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\Test\TestLogger;
 
-final class TelegramNotifierLiteTest extends TestCase
+final class TelegramNotifierTest extends TestCase
 {
-    /** @var TelegramNotifierLite */
+    /** @var TelegramNotifier */
     private $notifier;
     /** @var TestLogger */
     private $logger;
@@ -39,7 +39,7 @@ final class TelegramNotifierLiteTest extends TestCase
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $this->notifier = new TelegramNotifierLite($client, '', $this->firstToken, $this->logger);
+        $this->notifier = new TelegramNotifier($client, '', $this->firstToken, $this->logger);
     }
 
     /**

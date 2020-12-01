@@ -11,12 +11,12 @@ You do not need to register a bot or making other difficult actions. Start recei
 * `composer require bu4ak/telegram-notifier-lite-client`
 * Start a dialogue with the bot [Notifier](https://telegram.me/notificator_lite_bot) (@notificator_lite_bot), or invite him to your telegram channel. He will send you a token.
 ```php
-use Bu4ak\TelegramNotifierLite\TelegramNotifierLite;
+use Bu4ak\TelegramNotifier\TelegramNotifier;
 
 $defaultChannel = 'XXXXXXXXXXXXXXXX';
 $debugChannel   = 'YYYYYYYYYYYYYYYY';
 
-$notifier = new TelegramNotifierLite($defaultChannel);
+$notifier = new TelegramNotifier($defaultChannel);
 $notifier->send('Wake up! You have a new order!');
 ...
 $notifier->send(['New feedback' => 'Hello how are you I am under the water please help me']);
@@ -32,24 +32,24 @@ $notifier->send(['New feedback' => 'Hello how are you I am under the water pleas
 ```php
  'providers' => [
     ...
-    TelegramNotifierLiteServiceProvider::class
+    TelegramNotifierServiceProvider::class
     ...
  ]
 ```
- * `php artisan vendor:publish --provider="Bu4ak\TelegramNotifierLite\TelegramNotifierLiteServiceProvider"`
+ * `php artisan vendor:publish --provider="Bu4ak\TelegramNotifier\TelegramNotifierServiceProvider"`
  * add row to .env file:
  ```php
 TELEGRAM_NOTIFIER_LITE_TOKEN=YOURTOKEN
 ```
 ##### Send message:
 ```php
-app(TelegramNotifierLite::class)->send(['your data'=>123]);
+app(TelegramNotifier::class)->send(['your data'=>123]);
 //or
 class RandomController extends BaseController
 {
-    public function randomMethod(TelegramNotifierLite $notifierLite)
+    public function randomMethod(TelegramNotifier $notifier)
     {
-        $this->notifier->send('random message', 'ANOTHER_CHANNEL_TOKEN');
+        $notifier->send('random message', 'ANOTHER_CHANNEL_TOKEN');
     }
 }
 ```

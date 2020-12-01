@@ -22,12 +22,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Bu4ak\\TelegramNotifierLite\\": "src/"
+      "Bu4ak\\TelegramNotifier\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Bu4ak\\TelegramNotifierLite\\Test\\": "tests/"
+      "Bu4ak\\TelegramNotifier\\Test\\": "tests/"
     }
   },
   "extra": {
