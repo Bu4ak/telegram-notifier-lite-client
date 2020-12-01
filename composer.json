@@ -33,7 +33,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Bu4ak\\TelegramNotifierLite\\TelegramNotifierLiteServiceProvider"
+        "Bu4ak\\TelegramNotifier\\Laravel\\TelegramNotifierServiceProvider"
       ]
     }
   }
