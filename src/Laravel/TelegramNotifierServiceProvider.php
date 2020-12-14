@@ -30,7 +30,7 @@ class TelegramNotifierServiceProvider extends ServiceProvider
     {
         $this->app->singleton(
             TelegramNotifierInterface::class,
-            static function () {
+            function () {
                 $httpClient = new Client(['timeout' => 10]);
                 $logger = $this->app->make(LoggerInterface::class);
                 return new TelegramNotifier(
