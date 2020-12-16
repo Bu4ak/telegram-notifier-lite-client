@@ -28,7 +28,7 @@ class TelegramNotifierServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(
+        $this->app->bind(
             TelegramNotifierInterface::class,
             function () {
                 $httpClient = new Client(['timeout' => 10]);
